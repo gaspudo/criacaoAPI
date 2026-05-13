@@ -35,10 +35,10 @@ namespace ExoApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult BuscarPorId(int id)
+        public IActionResult BuscaPorId(int id)
         {
             
-            Usuario user = _repository.BuscarPorId(id);
+            Usuario user = _repository.BuscaPorId(id);
             if (user == null)
             {
                 return NotFound();
@@ -50,7 +50,7 @@ namespace ExoApi.Controllers
         [HttpPut("{id}")]
         public IActionResult Atualizar (int id, Usuario user)
         {
-            Usuario userExistente = _repository.BuscarPorId(id);
+            Usuario userExistente = _repository.BuscaPorId(id);
             if (userExistente == null)
             {
                 return NotFound();

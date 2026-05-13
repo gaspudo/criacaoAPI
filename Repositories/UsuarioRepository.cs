@@ -27,7 +27,7 @@ namespace ExoApi.Repositories
             _context.SaveChanges();
         }
 
-        public Usuario BuscarPorId (int id)
+        public Usuario BuscaPorId (int id)
         {
             return _context.Usuarios.Find(id)!;
         }
