@@ -58,5 +58,19 @@ namespace ExoApi.Controllers
             _repository.Atualizar(id, user);
             return StatusCode(204);
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult Deletar (int id)
+        {
+            try
+            {
+                _repository.Deletar(id);
+                return StatusCode(204);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
     }
 }
