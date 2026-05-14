@@ -8,11 +8,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExoApi.Models
 {
-    [Table("Usuarios")]
+    [Table("tb_usuarios")]
     public class Usuario
     {
         [Key]
-        [Column("cd_usuario")]
+        [Column("cd_usuarios")]
         public int Id {get;set;}
 
         [Column("ds_email")]
