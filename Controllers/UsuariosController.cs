@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ExoApi.Models;
 using ExoApi.Repositories;
-using ExoApi.Contexts;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace ExoApi.Controllers
 {
@@ -15,10 +17,12 @@ namespace ExoApi.Controllers
     public class UsuariosController : Controller
     {
         private readonly UsuarioRepository _repository;
+        private IConfiguration _configuration;
 
-        public UsuariosController (UsuarioRepository repository)
+        public UsuariosController (UsuarioRepository repository, IConfiguration configuration)
         {
             _repository = repository;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -71,6 +75,34 @@ namespace ExoApi.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login (Usuario user)
+        {
+            Usuario userBuscado = _repository.Login(user.Email!, user.Senha!);
+            if (userBuscado == null)
+            {
+                return NotFound(new {mensagem = "Email ou senha inválidos"});
+            }
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Email, userBuscado.Email!),
+                new Claim(JwtRegisteredClaimNames.Jti, userBuscado.Id.ToString()),
+            };
+
+            var secretKey = _configuration["JwtSettings:SecretKey"];
+            if (string.IsNullOrEmpty(secretKey)) throw new InvalidOperationException("Chave JWT não configurada corretamente");
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
+            var creds = new SigningCredentials (key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken (
+                issuer: "exoapi.webapi",
+                audience:"exoapi.webapi",
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(30),
+                signingCredentials: creds
+            );
+            return Ok(new {token = new JwtSecurityTokenHandler().WriteToken(token)});
         }
     }
 }
