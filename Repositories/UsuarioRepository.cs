@@ -58,5 +58,10 @@ namespace ExoApi.Repositories
                 _context.Usuarios.Remove(userBuscado);
                 _context.SaveChanges();
         }
+
+        public Usuario Login (string email, string senha)
+        {
+            return _context.Usuarios.FirstOrDefault(u => u.Email == email && u.Senha == senha) ?? throw new InvalidOperationException("Não foi possível realizar o login tente novamente.");
+        }
     }
 }
